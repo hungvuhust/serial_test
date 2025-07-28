@@ -23,6 +23,12 @@ add_executable(serial_test  src/main.cpp)
 target_include_directories(serial_test PRIVATE ${3RD_INCLUDE_DIRS})
 target_link_libraries(serial_test  ${3RD_LIBRARIES_DIRS})
 
+# Set RPATH to find libraries in install directory
+set_target_properties(serial_test PROPERTIES
+    INSTALL_RPATH "\$ORIGIN/../lib;$ENV{ROS_DISTRO}/lib"
+    INSTALL_RPATH_USE_LINK_PATH TRUE
+)
+
 
 
 install(TARGETS
@@ -31,8 +37,14 @@ install(TARGETS
 )
 
 # install 3rd party libraries
-install(DIRECTORY 3rd
+install(DIRECTORY 3rd/
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+# Install shared libraries to system library path
+install(FILES 3rd/wit_c_sdk/lib/libwit_c_sdk.so 
   DESTINATION lib
+  PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
 
 install(DIRECTORY include
