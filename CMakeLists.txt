@@ -19,15 +19,24 @@ include_directories(
     include
 )
 
-add_executable(serial_test src/main.cpp)
+add_executable(serial_test  src/main.cpp)
 target_include_directories(serial_test PRIVATE ${3RD_INCLUDE_DIRS})
-target_link_libraries(serial_test PRIVATE ${3RD_LIBRARIES_DIRS})
+target_link_libraries(serial_test  ${3RD_LIBRARIES_DIRS})
 
 
 
 install(TARGETS
   serial_test
   DESTINATION lib/${PROJECT_NAME}
+)
+
+# install 3rd party libraries
+install(DIRECTORY 3rd
+  DESTINATION lib
+)
+
+install(DIRECTORY include
+  DESTINATION include
 )
 
 ament_package()
