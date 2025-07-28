@@ -19,7 +19,7 @@ using namespace std;
 
 #define SWITCH_CTRL 29
 
-std::string   port("/dev/ttyUSB0");
+std::string   port("/dev/imu");
 unsigned long baud = 115200;
 
 serial::Serial my_serial(port, baud, serial::Timeout::simpleTimeout(1000));
