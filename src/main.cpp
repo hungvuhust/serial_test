@@ -106,7 +106,37 @@ void SensorDataUpdata(uint32_t uiReg, uint32_t uiRegNum) {
 
 static void SensorUartSend(uint8_t *p_data, uint32_t uiSize) {
   my_serial.write(p_data, uiSize);
-  usleep(50000);
+  usleep(1000);
+}
+
+static void AutoScanSensor(void) {
+  const uint32_t c_uiBaud[7] = {4800,  9600,   19200, 38400,
+                                57600, 115200, 230400};
+  int            i, iRetry;
+
+  for (i = 0; i < 7; i++) {
+    my_serial.close();
+    my_serial.setBaudrate(c_uiBaud[i]);
+    my_serial.open();
+    if (my_serial.isOpen()) {
+      cout << "Serial Port is Open" << endl;
+    } else {
+      cout << "Serial Port is not Open" << endl;
+    }
+    iRetry = 2;
+    do {
+      s_cDataUpdate = 0;
+      WitReadReg(AX, 3);
+      usleep(100);
+      if (s_cDataUpdate != 0) {
+        printf("%d baud find sensor\r\n\r\n", c_uiBaud[i]);
+        return;
+      }
+      iRetry--;
+    } while (iRetry);
+  }
+  printf("can not find sensor\r\n");
+  printf("please check your connection\r\n");
 }
 
 int main() {
@@ -119,6 +149,8 @@ int main() {
   WitInit(WIT_PROTOCOL_NORMAL, 0x50);
   WitRegisterCallBack(SensorDataUpdata);
   WitSerialWriteRegister(SensorUartSend);
+
+  AutoScanSensor();
 
   while (true) {
     WitReadReg(AX, 12);
